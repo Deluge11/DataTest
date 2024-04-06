@@ -4,7 +4,7 @@
 //namespace DataTest
 //{
 
-//    public class BinaryTree
+//    public class tree
 //    {
 //        public int TreeLevel { get; private set; } = -1;
 //        public int NodesNum { get; private set; }

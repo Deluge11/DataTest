@@ -33,7 +33,7 @@ namespace DataTest
         }
         private void AddNode(myNode node, myNode addNode)
         {
-            
+
 
             if (addNode.ValueSize > node.ValueSize)
             {
@@ -81,8 +81,6 @@ namespace DataTest
         }
         private void Balance(myNode Nod)
         {
-
-
             if (Nod.Left != null)
             {
                 Balance(Nod.Left);
@@ -90,7 +88,6 @@ namespace DataTest
                 {
                     Nod.Left = Rotate(Nod.Left);
                 }
-                
             }
             if (Nod.Right != null)
             {
@@ -100,48 +97,47 @@ namespace DataTest
                     Nod.Right = Rotate(Nod.Right);
                 }
             }
-           
-
-
         }
         private myNode Rotate(myNode Nod)
         {
-      
+
             myNode NewRoot = Nod;
-            string[] CheckedSub = Highest2Sub(Nod);
-            string result = String.Join("", CheckedSub);
-            
-            if (result.Equals("LL"))
+            myNode tmp;
+            myNode OldL;
+            myNode OldR;
+            string Rotation = HighestTwoSubTree(Nod);
+
+            if (Rotation.Equals("LL"))
             {
                 NewRoot = Nod.Left;
-                myNode tmp = NewRoot.Right;
+                tmp = NewRoot.Right;
                 NewRoot.Right = Nod;
                 NewRoot.Right.Left = tmp;
             }
-            else if (result.Equals("LR"))
+            else if (Rotation.Equals("LR"))
             {
                 NewRoot = Nod.Left.Right;
-                myNode OldL = NewRoot.Left;
-                myNode OldR = NewRoot.Right;
+                OldL = NewRoot.Left;
+                OldR = NewRoot.Right;
                 Nod.Left.Right = null;
                 NewRoot.Left = Nod.Left;
                 Nod.Left = null;
                 NewRoot.Right = Nod;
-                if(OldL != null) { AddNode(Root, OldL); }
-                if(OldR != null) { AddNode(Root, OldR); }
+                if (OldL != null) { AddNode(Root, OldL); }
+                if (OldR != null) { AddNode(Root, OldR); }
             }
-            else if (result.Equals("RR"))
+            else if (Rotation.Equals("RR"))
             {
                 NewRoot = Nod.Right;
-                myNode tmp = NewRoot.Left;
+                tmp = NewRoot.Left;
                 NewRoot.Left = Nod;
                 NewRoot.Left.Right = tmp;
             }
-            else if (result.Equals("RL"))
+            else if (Rotation.Equals("RL"))
             {
                 NewRoot = Nod.Right.Left;
-                myNode OldL = NewRoot.Left;
-                myNode OldR = NewRoot.Right;
+                OldL = NewRoot.Left;
+                OldR = NewRoot.Right;
                 Nod.Right.Left = null;
                 NewRoot.Right = Nod.Right;
                 Nod.Right = null;
@@ -152,46 +148,39 @@ namespace DataTest
 
             if (Nod == Root)
             {
-             
                 Root = NewRoot;
                 return Root;
             }
             return NewRoot;
         }
 
-        private string[] Highest2Sub(myNode node)
+        private string HighestTwoSubTree(myNode node)
         {
-            string[] arr = new string[2];
+            string result;
+
             if (node.getHeight(node.Left) > node.getHeight(node.Right))
             {
-                arr[0] = "L";
-
                 if (node.getHeight(node.Left.Left) > node.getHeight(node.Left.Right))
                 {
-                    arr[1] = "L";
+                    result = "LL";
                 }
                 else
                 {
-                    arr[1] = "R";
+                    result = "LR";
                 }
             }
             else
             {
-                arr[0] = "R";
-
                 if (node.getHeight(node.Right.Right) > node.getHeight(node.Right.Left))
                 {
-                    arr[1] = "R";
+                    result = "RR";
                 }
                 else
                 {
-                    arr[1] = "L";
+                    result = "RL";
                 }
-
             }
-
-
-            return arr;
+            return result;
         }
 
     }
@@ -202,6 +191,10 @@ namespace DataTest
         public string Value { get; set; }
         public myNode Left { get; set; } = null!;
         public myNode Right { get; set; } = null!;
+        public myNode(string value)
+        {
+            this.SetValue(value);
+        }
         public int GetSize(string value)
         {
             int valueSize;
@@ -227,26 +220,15 @@ namespace DataTest
             this.Value = value;
             this.ValueSize = GetSize(value);
         }
-        public myNode(string value)
-        {
-            this.SetValue(value);
-        }
         public int getHeight(myNode node)
         {
             if (node == null) return -1;
-
-            int LeftSubTreeHight = getHeight(node.Left);
-            int RightSubTreeHight = getHeight(node.Right);
-
-            return 1 + Math.Max(LeftSubTreeHight, RightSubTreeHight);
+            return 1 + Math.Max(getHeight(node.Left), getHeight(node.Right));
         }
         public int getFactor()
         {
             if (this == null) return -1;
             return getHeight(this.Left) - getHeight(this.Right);
         }
-
-
-
     }
 }

@@ -19,12 +19,14 @@ namespace DataTest
 
 
 
-           
 
-            for (int i = 1000; i > 0; i--)
-            {
-                tree.Add(i.ToString());
-            }
+            tree.Add("60");
+            tree.Add("50");
+            tree.Add("40");
+            tree.Add("65");
+            tree.Add("55");
+            tree.Add("45");
+
 
 
 
