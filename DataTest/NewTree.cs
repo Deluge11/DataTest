@@ -33,8 +33,6 @@ namespace DataTest
         }
         private void AddNode(myNode node, myNode addNode)
         {
-
-
             if (addNode.ValueSize > node.ValueSize)
             {
                 if (node.Right == null)
@@ -59,7 +57,7 @@ namespace DataTest
             }
         }
 
-        public void PrintTree()
+        public void Print()
         {
             if (Root == null)
             {
@@ -67,10 +65,11 @@ namespace DataTest
                 return;
             }
             Print(Root);
+            Console.WriteLine("=====================================");
         }
         private void Print(myNode node, string space = " ")
         {
-            Console.WriteLine(space + node.Value);
+            Console.WriteLine(space + node.ValueSize);
             if (node.Left != null) Print(node.Left, space + "  ");
             if (node.Right != null) Print(node.Right, space + "  ");
         }
@@ -102,7 +101,6 @@ namespace DataTest
         {
 
             myNode NewRoot = Nod;
-            myNode tmp;
             myNode OldL;
             myNode OldR;
             string Rotation = HighestTwoSubTree(Nod);
@@ -110,9 +108,11 @@ namespace DataTest
             if (Rotation.Equals("LL"))
             {
                 NewRoot = Nod.Left;
-                tmp = NewRoot.Right;
+                OldR = NewRoot.Right;
+                Nod.Left = null;
                 NewRoot.Right = Nod;
-                NewRoot.Right.Left = tmp;
+                if (Nod == Root) { Root = NewRoot; }
+                if (OldR != null) { AddNode(Root, OldR); }
             }
             else if (Rotation.Equals("LR"))
             {
@@ -123,37 +123,34 @@ namespace DataTest
                 NewRoot.Left = Nod.Left;
                 Nod.Left = null;
                 NewRoot.Right = Nod;
+                if (Nod == Root) { Root = NewRoot; }
                 if (OldL != null) { AddNode(Root, OldL); }
                 if (OldR != null) { AddNode(Root, OldR); }
             }
             else if (Rotation.Equals("RR"))
             {
                 NewRoot = Nod.Right;
-                tmp = NewRoot.Left;
+                OldL = NewRoot.Left;
+                Nod.Right = null;
                 NewRoot.Left = Nod;
-                NewRoot.Left.Right = tmp;
+                if (Nod == Root) { Root = NewRoot; }
+                if (OldL != null) { AddNode(Root, OldL); }
             }
             else if (Rotation.Equals("RL"))
             {
                 NewRoot = Nod.Right.Left;
-                OldL = NewRoot.Left;
                 OldR = NewRoot.Right;
+                OldL = NewRoot.Left;
                 Nod.Right.Left = null;
                 NewRoot.Right = Nod.Right;
                 Nod.Right = null;
                 NewRoot.Left = Nod;
+                if (Nod == Root) { Root = NewRoot; }
                 if (OldL != null) { AddNode(Root, OldL); }
                 if (OldR != null) { AddNode(Root, OldR); }
             }
-
-            if (Nod == Root)
-            {
-                Root = NewRoot;
-                return Root;
-            }
             return NewRoot;
         }
-
         private string HighestTwoSubTree(myNode node)
         {
             string result;
@@ -183,6 +180,47 @@ namespace DataTest
             return result;
         }
 
+        public void Search(string value)
+        {
+            Search(Root, value);
+        }
+        public void Search(myNode node, string value)
+        {
+            int vSize = Root.GetSize(value);
+
+            if (value == node.Value)
+            {
+                Console.WriteLine("found");
+                return;
+            }
+
+            if (vSize > node.ValueSize)
+            {
+                if (node.Right != null)
+                {
+                    Search(node.Right, value);
+                }
+            }
+            else if (vSize <= node.ValueSize)
+            {
+                if (node.Left != null)
+                {
+                    Search(node.Left, value);
+                }
+                if (node.Right != null)
+                {
+                    if (vSize == node.Right.ValueSize)
+                    {
+                        Search(node.Right, value);
+                    }
+                }
+            }
+        }
+
+        public void Delete(string value)
+        {
+
+        }
     }
 
     public class myNode

@@ -17,28 +17,24 @@ namespace DataTest
             NewTree tree = new NewTree();
 
 
+            tree.Add("1000000");
+            tree.Print();
+            tree.Add("0100000");
+            tree.Print();
+            tree.Add("0010000");
+            tree.Print();
+            tree.Add("1001000");
+            tree.Print();
+            tree.Add("1000100");
+            tree.Print();
+            tree.Add("1000010");
+            tree.Print();
+            tree.Add("1000001");
+            tree.Print();
 
 
 
-            tree.Add("60");
-            tree.Add("50");
-            tree.Add("40");
-            tree.Add("65");
-            tree.Add("55");
-            tree.Add("45");
-
-
-
-
-
-
-
-
-
-
-
-
-
+            tree.Search("1000010");
 
 
 
@@ -53,7 +49,11 @@ namespace DataTest
 
 
 
-            tree.PrintTree();
+
+
+
+
+         
         }
 
 
