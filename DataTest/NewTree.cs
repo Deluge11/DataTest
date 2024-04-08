@@ -37,7 +37,7 @@ namespace DataTest
         }
         private void AddNode(myNode node, myNode addNode)
         {
-            if (addNode.getSize(addNode.Value) > node.getSize(node.Value))
+            if (string.Compare(addNode.Value, node.Value) > 0)
             {
                 if (node.Right == null)
                 {
@@ -48,7 +48,7 @@ namespace DataTest
                     AddNode(node.Right, addNode);
                 }
             }
-            else if (addNode.getSize(addNode.Value) <= node.getSize(node.Value))
+            else if (string.Compare(addNode.Value, node.Value) <= 0)
             {
                 if (node.Left == null)
                 {
@@ -197,7 +197,10 @@ namespace DataTest
                 return null;
 
             myNode SearchedNode = null;
-            Search(Root, value, ref SearchedNode, false);
+            Search(Root, value, ref SearchedNode, false, false);
+
+            if (SearchedNode == null)
+                return null;
 
             if (!searchparent)
             {
@@ -211,62 +214,89 @@ namespace DataTest
                 if (SearchedNode != null)
                 {
                     SearchedNode = null;
-                    Search(RootPtr, value, ref SearchedNode, true);
+                    Search(RootPtr, value, ref SearchedNode, true, false);
                     return SearchedNode;
                 }
             }
             return null;
         }
-        private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false)
+        private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false, bool getLowest = false)
         {
             if (node == null)
                 return;
 
-            int vSize = Root.getSize(value);
+            if (Searched != null) // found
+                return;
 
-            if (searchparent)
+            if (getLowest) // GetLowestinSubTree Mode
             {
-                if (node.Left != null)
-                    if (node.Left.Value == value)
-                        Searched = node;
-                if (node.Right != null)
-                    if (node.Right.Value == value)
-                        Searched = node;
-            }
-            if (!searchparent)
-            {
-                if (node.Value == value && Searched == null)
+                if (node.Right == null) return;
+
+                Searched = node.Right;
+
+                for (; Searched.Left != null; Searched = Searched.Left)
                 {
-                    Searched = node;
+                    if (searchparent)
+                    {
+                        if (Searched.Left.Left == null)
+                            return;
+                    }
                 }
             }
-            if (vSize <= node.getSize(node.Value))
+            else if (!getLowest)
             {
-                Search(node.Left, value, ref Searched, searchparent);
-            }
-            if (vSize >= node.getSize(node.Value))
-            {
-                Search(node.Right, value, ref Searched, searchparent);
+                if (searchparent) // Search for perant
+                {
+                    if (node.Left != null)
+                        if (node.Left.Value == value)
+                            Searched = node;
+                    if (node.Right != null)
+                        if (node.Right.Value == value)
+                            Searched = node;
+                }
+                if (!searchparent) // Default Mode
+                {
+                    if (node.Value == value && Searched == null)
+                    {
+                        Searched = node;
+                    }
+                }
+
+                if (string.Compare(value, node.Value) >= 0)
+                {
+                    Search(node.Right, value, ref Searched, searchparent, false);
+                }
+                if (string.Compare(value, node.Value) <= 0)
+                {
+                    Search(node.Left, value, ref Searched, searchparent, false);
+                }
             }
         }
 
         public myNode Delete(string value)
         {
-            myNode node = Search(value);
+            myNode node;
+            myNode parent;
+            char side;
+            int NumOfChildrens;
+
+            node = Search(value);
             if (node == null) return null;
 
-            int NumOfChildrens = node.childrensNum();
+            parent = Search(value, true);
+            side = parent.Left == node ? 'L' : 'R';
 
-            myNode parent = Search(value, true);
-            char side = parent.Left == node ? 'L' : 'R';
-
-            Delete(side, NumOfChildrens,node,parent);
+            NumOfChildrens = node.childrensNum();
+            Delete(side, NumOfChildrens, node, parent);
+            Balance();
             return node;
         }
-        public void Delete(char side, int cNum,myNode node ,myNode parent)
+        private void Delete(char side, int cNum, myNode node, myNode parent)
         {
             myNode LowestNodeFromRight = null;
-            if (side == 'L')
+            myNode LowestNodeParent = null;
+
+            if (side == 'L')  // Left to Parent
             {
                 if (cNum == 0)
                 {
@@ -274,19 +304,39 @@ namespace DataTest
                 }
                 else if (cNum == 1)
                 {
-                    if (node.Left == null)
+                    if (node.Left != null)
                     {
-                        parent.Left = node.Right;
+                        parent.Left = node.Left;
                     }
                     else
                     {
-                        parent.Left = node.Left;
+                        parent.Left = node.Right;
                     }
                 }
                 else if (cNum == 2)
                 {
-                    LowestNodeFromRight = node.getLowestNode();
-                    node.Value = Delete(LowestNodeFromRight.Value).Value;
+                    Search(node, node.Value, ref LowestNodeFromRight, false, true);
+                    Search(node, node.Value, ref LowestNodeParent, true, true);
+
+                    node.Value = LowestNodeFromRight.Value;
+
+                    if (node.Right.Left == null)
+                    {
+                        myNode OldL = node.Left.deepCopy();
+                        parent.Left = node.Right;
+                        parent.Left.Left = OldL;
+                    }
+                    else
+                    {
+                        if (LowestNodeFromRight.childrensNum() > 0) //Had Right Leaf
+                        {
+                            LowestNodeParent.Left = LowestNodeFromRight.Right;
+                        }
+                        else
+                        {
+                            LowestNodeParent.Left = null;
+                        }
+                    }
                 }
             }
             else
@@ -308,9 +358,33 @@ namespace DataTest
                 }
                 else if (cNum == 2)
                 {
-                    LowestNodeFromRight = node.getLowestNode();
-                    node.Value = Delete(LowestNodeFromRight.Value).Value;
+                    Search(node, node.Value, ref LowestNodeFromRight, false, true);
+                    Search(node, node.Value, ref LowestNodeParent, true, true);
+
+                    node.Value = LowestNodeFromRight.Value;
+
+                    if (node.Right.Left == null)
+                    {
+                        myNode OldL = node.Left.deepCopy();
+                        parent.Right = node.Right;
+                        parent.Right.Left = OldL;
+                    }
+                    else
+                    {
+                        if (LowestNodeFromRight.childrensNum() > 0)
+                        {
+                            LowestNodeParent.Left = LowestNodeFromRight.Right;
+                        }
+                        else
+                        {
+                            LowestNodeParent.Left = null;
+                        }
+                    }
                 }
+            }
+            if (parent == RootPtr)
+            {
+                Root = parent.Left;
             }
         }
     }
@@ -366,16 +440,6 @@ namespace DataTest
             clone.Left = this.Left;
             clone.Right = this.Right;
             return clone;
-        }
-        public myNode getLowestNode()
-        {
-            myNode Subroot = this.Right;
-
-            while (Subroot.Left != null)
-            {
-                Subroot = Subroot.Left;
-            }
-            return Subroot;
         }
     }
 
