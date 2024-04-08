@@ -21,66 +21,41 @@ namespace DataTest
             NewTree tree = new NewTree();
 
 
-            //tree.Add("40");
-            //tree.Add("20");
-            //tree.Add("10");
-            //tree.Add("25");
-            //tree.Add("30");
-            //tree.Add("22");
-            //tree.Add("50");
-            //tree.Add("60");
-            //tree.Add("32");
-            //tree.Add("57");
-            //tree.Add("41");
-            //tree.Add("37");
-            //tree.Add("28");
-            //tree.Add("75");
-            //tree.Add("31");
-            //tree.Add("12");
-            //tree.Add("69");
-            //tree.Add("65");
-            //tree.Add("47");
-            //tree.Add("34");
-            //tree.Add("53");
-            //tree.Add("91");
-            //tree.Add("72");
-            //tree.Add("49");
-            //tree.Add("11");
-            //tree.Add("48");
-            //tree.Add("99");
-            //tree.Add("42");
-            //tree.Add("82");
-            //tree.Add("17");
+            tree.Add("40");
+            tree.Add("20");
+            tree.Add("10");
+            tree.Add("25");
+            tree.Add("30");
+            tree.Add("22");
+            tree.Add("50");
+            tree.Add("60");
+            tree.Add("32");
+            tree.Add("57");
+            tree.Add("41");
+            tree.Add("37");
+            tree.Add("28");
+            tree.Add("75");
+            tree.Add("31");
+            tree.Add("12");
+            tree.Add("69");
+            tree.Add("65");
+            tree.Add("47");
+            tree.Add("34");
+            tree.Add("53");
+            tree.Add("91");
+            tree.Add("72");
+            tree.Add("49");
+            tree.Add("11");
+            tree.Add("48");
+            tree.Add("99");
+            tree.Add("42");
+            tree.Add("82");
+            tree.Add("17");
 
-
-            tree.Add("00000001");
-            tree.Add("00000010");
-            tree.Add("00000100");
-            tree.Add("00001000");
-            tree.Add("00010000");
-            tree.Add("00100000");
-            tree.Add("01000000");
-
-       
             tree.Print();
+            tree.Delete("50");
 
-            Console.WriteLine("00000001 my Parent is :" + tree.Search("00000001",true).Value);
-            Console.WriteLine("00000010 my Parent is :" + tree.Search("00000010",true).Value);
-            Console.WriteLine("00000100 my Parent is :" + tree.Search("00000100",true).Value);
-            Console.WriteLine("00000100 my Parent is :" + tree.Search("00000100",true).Value);
-            Console.WriteLine("00010000 my Parent is :" + tree.Search("00010000",true).Value);
-            Console.WriteLine("00100000 my Parent is :" + tree.Search("00100000",true).Value);
-            Console.WriteLine("01000000 my Parent is :" + tree.Search("01000000",true).Value);
-
-
-
-
-
-
-
-
-
-
+            tree.Print();
 
         }
 
