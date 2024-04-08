@@ -62,28 +62,21 @@ namespace DataTest
             }
         }
 
-        public void Print(bool printsize = false)
+        public void Print()
         {
             if (Root == null)
             {
                 Console.WriteLine("Tree is Empty");
                 return;
             }
-            Print(Root, printsize);
+            Print(Root);
             Console.WriteLine("=====================================");
         }
-        private void Print(myNode node, bool printsize, string space = " ")
+        private void Print(myNode node, string space = " ")
         {
-            if (printsize)
-            {
-                Console.WriteLine(space + node.getSize(node.Value));
-            }
-            else
-            {
-                Console.WriteLine(space + node.Value);
-            }
-            if (node.Left != null) Print(node.Left, printsize, space + "  ");
-            if (node.Right != null) Print(node.Right, printsize, space + "  ");
+                Console.WriteLine(space + node.Value);    
+            if (node.Left != null) Print(node.Left, space + "  ");
+            if (node.Right != null) Print(node.Right, space + "  ");
         }
 
         public void Balance()
@@ -413,19 +406,6 @@ namespace DataTest
         public string Value { get; set; }
         public myNode Left { get; set; } = null!;
         public myNode Right { get; set; } = null!;
-        public int getSize(string value)
-        {
-            int valueSize = 0;
-
-            int i = 0;
-            while (!value[i].Equals('@'))
-            {
-                valueSize += (int)value[i];
-                if (value.Length == ++i)
-                    break;
-            }
-            return valueSize;
-        }
         public int getHeight(myNode node)
         {
             if (node == null) return -1;
@@ -444,12 +424,6 @@ namespace DataTest
             if (Right != null)
                 num++;
             return num;
-        }
-        public myNode reNodeWithOutChild()
-        {
-            Left = null;
-            Right = null;
-            return this;
         }
         public myNode deepCopy()
         {
