@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
 using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.AccessControl;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,7 +37,7 @@ namespace DataTest
         }
         private void AddNode(myNode node, myNode addNode)
         {
-            if (addNode.ValueSize > node.ValueSize)
+            if (addNode.getSize(addNode.Value) > node.getSize(node.Value))
             {
                 if (node.Right == null)
                 {
@@ -44,7 +48,7 @@ namespace DataTest
                     AddNode(node.Right, addNode);
                 }
             }
-            else if (addNode.ValueSize <= node.ValueSize)
+            else if (addNode.getSize(addNode.Value) <= node.getSize(node.Value))
             {
                 if (node.Left == null)
                 {
@@ -69,7 +73,7 @@ namespace DataTest
         }
         private void Print(myNode node, string space = " ")
         {
-            Console.WriteLine(space + node.ValueSize);
+            Console.WriteLine(space + node.Value);
             if (node.Left != null) Print(node.Left, space + "  ");
             if (node.Right != null) Print(node.Right, space + "  ");
         }
@@ -180,83 +184,110 @@ namespace DataTest
             return result;
         }
 
-        public void Search(string value)
+        public myNode Search(string value, bool searchparent = false)
         {
-            Search(Root, value);
-        }
-        public void Search(myNode node, string value)
-        {
-            int vSize = Root.GetSize(value);
+            if (value.Equals("")) return null;
 
-            if (value == node.Value)
-            {
-                Console.WriteLine("found");
-                return;
-            }
+            myNode SearchedNode = null;
+            Search(Root, value, ref SearchedNode, false);
 
-            if (vSize > node.ValueSize)
+            if (!searchparent)
             {
-                if (node.Right != null)
+                if (SearchedNode.Value == value)
                 {
-                    Search(node.Right, value);
+                    return SearchedNode;
                 }
             }
-            else if (vSize <= node.ValueSize)
+            else if (searchparent)
+            {
+                if (SearchedNode != null)
+                {
+                    SearchedNode = null;
+                    Search(Root, value, ref SearchedNode, true);
+                    return SearchedNode;
+                }
+            }
+            return null;
+        }
+        private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false)
+        {
+            int vSize = Root.getSize(value);
+
+            if (searchparent)
+            {
+                if (node.Left != null)
+                    if (node.Left.Value == value)
+                        Searched = node;
+                if (node.Right != null)
+                    if (node.Right.Value == value)
+                        Searched = node;
+            }
+            if (!searchparent)
+            {
+                if (node.Value == value && Searched == null)
+                {
+                    Searched = node;
+                }
+            }
+            if (vSize <= node.getSize(node.Value))
             {
                 if (node.Left != null)
                 {
-                    Search(node.Left, value);
+                    Search(node.Left, value, ref Searched, searchparent);
                 }
+            }
+            if (vSize >= node.getSize(node.Value))
+            {
                 if (node.Right != null)
                 {
-                    if (vSize == node.Right.ValueSize)
-                    {
-                        Search(node.Right, value);
-                    }
+                    Search(node.Right, value, ref Searched, searchparent);
                 }
             }
         }
 
-        public void Delete(string value)
+        public myNode Delete(string value)
         {
+            myNode node = Search(value);
+            if (node == null)
+                return null;
 
+            return Delete(node);
+        }
+        public myNode Delete(myNode node)
+        {
+            int NumOfChildrens = node.childrensNum();
+            if (NumOfChildrens == 0) { }
+            else if (NumOfChildrens == 1)
+            {
+
+            }
+            else if (NumOfChildrens == 2)
+            {
+
+            }
+
+            return node;
         }
     }
 
     public class myNode
     {
-        public int ValueSize { get; private set; }
+        public myNode(string value) { Value = value; }
         public string Value { get; set; }
         public myNode Left { get; set; } = null!;
         public myNode Right { get; set; } = null!;
-        public myNode(string value)
+        public int getSize(string value)
         {
-            this.SetValue(value);
-        }
-        public int GetSize(string value)
-        {
-            int valueSize;
+            int valueSize = 0;
 
-            if (int.TryParse(value, out valueSize))
+            int i = 0;
+            while (!value[i].Equals('@'))
             {
-                valueSize = int.Parse(value);
-            }
-            else
-            {
-                int i = 0;
-                while (!value[i].Equals('@'))
-                {
-                    valueSize += (int)value[i];
-                    if (value.Length == ++i)
-                        break;
-                }
+                valueSize += (int)value[i];
+                if (value.Length == ++i)
+                    break;
             }
             return valueSize;
-        }
-        public void SetValue(string value)
-        {
-            this.Value = value;
-            this.ValueSize = GetSize(value);
         }
         public int getHeight(myNode node)
         {
@@ -266,7 +297,42 @@ namespace DataTest
         public int getFactor()
         {
             if (this == null) return -1;
-            return getHeight(this.Left) - getHeight(this.Right);
+            return getHeight(Left) - getHeight(Right);
         }
+        public short childrensNum()
+        {
+            short num = 0;
+            if (Left != null)
+                num++;
+            if (Right != null)
+                num++;
+            return num;
+        }
+        public myNode reNodeWithOutChild()
+        {
+            Left = null;
+            Right = null;
+            return this;
+        }
+        public Queue<char> getLowestNodePath(Queue<char> path)
+        {
+            if (Left != null)
+            {
+                path.Enqueue('L');
+                Left.getLowestNodePath(path);
+            }
+
+            return path;
+        }
+        public myNode deepCopy()
+        {
+            myNode clone = new myNode("null");
+            clone.Value = this.Value;
+            clone.Left = this.Left;
+            clone.Right = this.Right;
+            return clone;
+        }
+
     }
+
 }
