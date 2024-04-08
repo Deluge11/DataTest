@@ -53,41 +53,6 @@ namespace DataTest
             tree.Add("17");
 
 
-            tree.Delete("40");
-            tree.Delete("20");
-            tree.Delete("10");
-            tree.Delete("25");
-            tree.Delete("30");
-            tree.Delete("22");
-            tree.Delete("50");
-            tree.Delete("60");
-            tree.Delete("32");
-            tree.Delete("57");
-            tree.Delete("41");
-            tree.Delete("37");
-            tree.Delete("28");
-            tree.Delete("75");
-            tree.Delete("31");
-            tree.Delete("12");
-            tree.Delete("69");
-            tree.Delete("65");
-            tree.Delete("47");
-            tree.Delete("34");
-            tree.Delete("53");
-            tree.Delete("91");
-            tree.Delete("72");
-            tree.Delete("49");
-            tree.Delete("11");
-            tree.Delete("48");
-            tree.Delete("99");
-            tree.Delete("42");
-            tree.Delete("82");
-            tree.Delete("17");
-
-
-
-
-
             tree.Print();
 
 

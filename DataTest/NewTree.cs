@@ -28,6 +28,7 @@ namespace DataTest
             {
                 Root = new myNode(value);
                 RootPtr.Left = Root;
+                RootPtr.Right = Root;
             }
             else
             {
@@ -385,6 +386,23 @@ namespace DataTest
             if (parent == RootPtr)
             {
                 Root = parent.Left;
+            }
+        }
+
+        public void Update(string value, string newValue)
+        {
+            try
+            {
+                myNode node = Delete(value).deepCopy();
+                node.Left = null;
+                node.Right = null;
+
+                node.Value = newValue;
+                AddNode(RootPtr, node);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Not Found!");
             }
         }
     }
