@@ -21,7 +21,7 @@ namespace DataTest
         public myNode Root { get; set; } = null!;
         public void Add(string value)
         {
-            if (value.Equals(""))
+            if (string.IsNullOrEmpty(value))
                 return;
 
             if (Root == null)
@@ -74,7 +74,7 @@ namespace DataTest
         }
         private void Print(myNode node, string space = " ")
         {
-                Console.WriteLine(space + node.Value);    
+            Console.WriteLine(space + node.Value);
             if (node.Left != null) Print(node.Left, space + "  ");
             if (node.Right != null) Print(node.Right, space + "  ");
         }
@@ -187,13 +187,10 @@ namespace DataTest
 
         public myNode Search(string value, bool searchparent = false)
         {
-            if (string.IsNullOrEmpty(value) || Root == null)
-                return null;
-
             myNode SearchedNode = null;
             Search(Root, value, ref SearchedNode, false, false);
 
-            if (SearchedNode == null)
+            if (string.IsNullOrEmpty(value) || Root == null || SearchedNode == null)
                 return null;
 
             if (!searchparent)
@@ -223,7 +220,7 @@ namespace DataTest
             {
                 if (node.Right == null) return;
 
-                for (Searched = node.Right ; Searched.Left != null; Searched = Searched.Left) // in Default its end with Last Node
+                for (Searched = node.Right; Searched.Left != null; Searched = Searched.Left) // in Default its end with Last Node
                 {
                     if (searchparent)
                     {
