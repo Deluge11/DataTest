@@ -216,23 +216,18 @@ namespace DataTest
         }
         private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false, bool getLowest = false)
         {
-            if (node == null)
+            if (node == null || Searched != null) //Result
                 return;
 
-            if (Searched != null) // found
-                return;
-
-            if (getLowest) // GetLowestinSubTree Mode
+            if (getLowest) // Get Lowest Node in Right SubTree Mode
             {
                 if (node.Right == null) return;
 
-                Searched = node.Right;
-
-                for (; Searched.Left != null; Searched = Searched.Left)
+                for (Searched = node.Right ; Searched.Left != null; Searched = Searched.Left) // in Default its end with Last Node
                 {
                     if (searchparent)
                     {
-                        if (Searched.Left.Left == null)
+                        if (Searched.Left.Left == null) // Parent of The Last Node
                             return;
                     }
                 }
@@ -269,19 +264,14 @@ namespace DataTest
 
         public myNode Delete(string value)
         {
-            myNode node;
-            myNode parent;
-            char side;
-            int NumOfChildrens;
-
-            node = Search(value);
+            myNode node = Search(value); // Check if Node exist
             if (node == null) return null;
 
-            parent = Search(value, true);
-            side = parent.Left == node ? 'L' : 'R';
+            myNode parent = Search(value, true);
 
-            NumOfChildrens = node.childrensNum();
-            Delete(side, NumOfChildrens, node, parent);
+            char side = parent.Left == node ? 'L' : 'R'; // Node Side
+
+            Delete(side, node.childrensNum(), node, parent);
             Balance();
             return node;
         }
@@ -434,5 +424,4 @@ namespace DataTest
             return clone;
         }
     }
-
 }
