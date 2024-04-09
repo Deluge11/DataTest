@@ -21,7 +21,7 @@ namespace DataTest
         public myNode Root { get; set; } = null!;
         public void Add(string value)
         {
-            if (value.Equals(""))
+            if (string.IsNullOrEmpty(value))
                 return;
 
             if (Root == null)
@@ -74,7 +74,7 @@ namespace DataTest
         }
         private void Print(myNode node, string space = " ")
         {
-                Console.WriteLine(space + node.Value);    
+            Console.WriteLine(space + node.Value);
             if (node.Left != null) Print(node.Left, space + "  ");
             if (node.Right != null) Print(node.Right, space + "  ");
         }
@@ -87,7 +87,8 @@ namespace DataTest
         {
             if (Nod.Left != null)
             {
-                Balance(Nod.Left);
+                // Balance Left Subtree Befour The Root
+                Balance(Nod.Left); 
                 if (Nod.Left.getFactor() == 2 || Nod.Left.getFactor() == -2)
                 {
                     Nod.Left = Rotate(Nod.Left);
@@ -95,6 +96,7 @@ namespace DataTest
             }
             if (Nod.Right != null)
             {
+                // Balance Right Subtree Befour The Root
                 Balance(Nod.Right);
                 if (Nod.Right.getFactor() == 2 || Nod.Right.getFactor() == -2)
                 {
@@ -108,7 +110,7 @@ namespace DataTest
             myNode NewRoot = Nod;
             myNode OldL;
             myNode OldR;
-            string Rotation = HighestTwoSubTree(Nod);
+            string Rotation = HighestTwoSubTree(Nod); // Get Highest Path
 
             if (Rotation.Equals("LL"))
             {
@@ -187,13 +189,10 @@ namespace DataTest
 
         public myNode Search(string value, bool searchparent = false)
         {
-            if (string.IsNullOrEmpty(value) || Root == null)
-                return null;
-
             myNode SearchedNode = null;
             Search(Root, value, ref SearchedNode, false, false);
 
-            if (SearchedNode == null)
+            if (string.IsNullOrEmpty(value) || Root == null || SearchedNode == null)
                 return null;
 
             if (!searchparent)
@@ -216,13 +215,10 @@ namespace DataTest
         }
         private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false, bool getLowest = false)
         {
-            if (node == null)
+            if (node == null || Searched != null) // Found
                 return;
 
-            if (Searched != null) // found
-                return;
-
-            if (getLowest) // GetLowestinSubTree Mode
+            if (getLowest) // Get Lowest Node In Right SubTree Mode
             {
                 if (node.Right == null) return;
 
@@ -237,7 +233,7 @@ namespace DataTest
                     }
                 }
             }
-            else if (!getLowest)
+            else if (!getLowest) // Default
             {
                 if (searchparent) // Search for perant
                 {
@@ -248,7 +244,7 @@ namespace DataTest
                         if (node.Right.Value == value)
                             Searched = node;
                 }
-                if (!searchparent) // Default Mode
+                if (!searchparent) // Default
                 {
                     if (node.Value == value && Searched == null)
                     {
@@ -307,7 +303,7 @@ namespace DataTest
                         parent.Left = node.Right;
                     }
                 }
-                else if (cNum == 2)
+                else if (cNum == 2) // Replace Deleted Node with LowestNode in Right Subtree
                 {
                     Search(node, node.Value, ref LowestNodeFromRight, false, true);
                     Search(node, node.Value, ref LowestNodeParent, true, true);
