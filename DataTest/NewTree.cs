@@ -147,9 +147,6 @@ namespace DataTest
             }
             else if (Rotation.Equals("RR")) // Right Right Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Value))
-                    return Nod;
-
                 NewRoot = Nod.Right;
                 OldLeft = NewRoot.Left;
                 Nod.Right = null;
@@ -159,7 +156,7 @@ namespace DataTest
             }
             else if (Rotation.Equals("RL")) // Right Left Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Left.Value))
+                if (Nod.getSize(Nod.Right.Value) == Nod.getSize(Nod.Right.Left.Value))
                     return Nod;
 
                 NewRoot = Nod.Right.Left;
