@@ -154,14 +154,20 @@ namespace DataTest
             }
             else if (Rotation == "RR") // Right Right Rotation 
             {
-                NewRoot = node.Right;
+                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Value))
+                    return Nod;
+
+                NewRoot = Nod.Right;
                 OldLeft = NewRoot.Left;
                 node.Right = null;
                 NewRoot.Left = node;
             }
             else if (Rotation == "RL") // Right Left Rotation 
             {
-                NewRoot = node.Right.Left;
+                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Left.Value))
+                    return Nod;
+
+                NewRoot = Nod.Right.Left;
                 OldRight = NewRoot.Right;
                 OldLeft = NewRoot.Left;
                 node.Right.Left = null;
