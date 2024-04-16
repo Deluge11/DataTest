@@ -1,25 +1,12 @@
-﻿using Microsoft.Win32.SafeHandles;
+﻿
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Data.Common;
-using System.Data.SqlTypes;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Security.AccessControl;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataTest
 {
     public class NewTree
     {
-        public myNode RootPtr = new myNode("RootPtr");
-        public myNode Root { get; set; } = null!;
+        public TreeNode RootPtr = new TreeNode("RootPtr");
+        public TreeNode Root { get; private set; } = null!;
         public void Add(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -27,37 +14,37 @@ namespace DataTest
 
             if (Root == null)
             {
-                Root = new myNode(value);
+                Root = new TreeNode(value);
                 RootPtr.Left = Root;
             }
             else
             {
-                AddNode(Root, new myNode(value));
+                AddNode(Root, new TreeNode(value));
                 Balance();
             }
         }
-        private void AddNode(myNode node, myNode addNode)
+        private void AddNode(TreeNode node, TreeNode newNode)
         {
-            if (addNode.getSize(addNode.Value) > node.getSize(node.Value))
+            if (newNode.getSize(newNode.Value) > node.getSize(node.Value))
             {
                 if (node.Right == null)
                 {
-                    node.Right = addNode;
+                    node.Right = newNode;
                 }
                 else
                 {
-                    AddNode(node.Right, addNode);
+                    AddNode(node.Right, newNode);
                 }
             }
-            else if (addNode.getSize(addNode.Value) <= node.getSize(node.Value))
+            else if (newNode.getSize(newNode.Value) <= node.getSize(node.Value))
             {
                 if (node.Left == null)
                 {
-                    node.Left = addNode;
+                    node.Left = newNode;
                 }
                 else
                 {
-                    AddNode(node.Left, addNode);
+                    AddNode(node.Left, newNode);
                 }
             }
         }
@@ -67,12 +54,13 @@ namespace DataTest
             if (Root == null)
             {
                 Console.WriteLine("Tree is Empty");
+                
                 return;
             }
             Print(Root, printsize);
             Console.WriteLine("=====================================");
         }
-        private void Print(myNode node, bool printsize, string space = " ")
+        private void Print(TreeNode node, bool printsize, string space = " ")
         {
             if (printsize) // Print by ValueSize
             {
@@ -82,104 +70,125 @@ namespace DataTest
             {
                 Console.WriteLine(space + node.Value);
             }
-            if (node.Left != null) Print(node.Left, printsize, space + "  ");
-            if (node.Right != null) Print(node.Right, printsize, space + "  ");
+            if (node.Left != null)
+            {
+                Print(node.Left, printsize, space + "  ");
+            }
+            if (node.Right != null)
+            {
+                Print(node.Right, printsize, space + "  ");
+            }
         }
 
         public void Balance()
         {
             Balance(RootPtr);
         }
-        private void Balance(myNode Nod)
+        private void Balance(TreeNode node)
         {
-            if (Nod.Left != null)
+            if (node.Left != null)
             {
                 //Check The Balance Of Depth Nodes First
-                Balance(Nod.Left);
-                if (Nod.Left.getFactor() == 2 || Nod.Left.getFactor() == -2)
+                Balance(node.Left);
+                if (node.Left.getFactor() == 2 || node.Left.getFactor() == -2)
                 {
-                    Nod.Left = Rotate(Nod.Left);
+                    node.Left = Rotate(node.Left);
                 }
             }
-            if (Nod.Right != null)
+            if (node.Right != null)
             {
-                Balance(Nod.Right);
-                if (Nod.Right.getFactor() == 2 || Nod.Right.getFactor() == -2)
+                Balance(node.Right);
+                if (node.Right.getFactor() == 2 || node.Right.getFactor() == -2)
                 {
-                    Nod.Right = Rotate(Nod.Right);
+                    node.Right = Rotate(node.Right);
                 }
             }
         }
-        private myNode Rotate(myNode Nod)
+        private TreeNode Rotate(TreeNode node)
         {
-            myNode NewRoot = Nod;
-            myNode OldLeft;
-            myNode OldRight;
-            string Rotation = HighestTwoSubTree(Nod); // Rotation Type 
+            TreeNode NewRoot = node;
+            TreeNode OldLeft = null;
+            TreeNode OldRight = null;
+            string Rotation = HighestTwoSubTree(node); // Rotation type 
 
-            if (Rotation.Equals("LL")) // Left Left Rotation 
+            //Maintaining the binary tree princeple
+
+            if (Rotation == "LL")
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Left.Value))
-                    return Nod;
-
-                NewRoot = Nod.Left;
-                OldRight = NewRoot.Right;
-                Nod.Left = null;
-                NewRoot.Right = Nod;
-                if (Nod == Root) { Root = NewRoot; }
-                if (OldRight != null) { AddNode(NewRoot, OldRight); }
+                if (node.getSize(node.Value) == node.getSize(node.Left.Value))
+                {
+                    return node;
+                }
             }
-            else if (Rotation.Equals("LR")) // Left Right Rotation 
+            else if (Rotation == "LR")
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Left.Right.Value))
-                    return Nod;
+                if (node.getSize(node.Value) == node.getSize(node.Left.Right.Value))
+                {
+                    return node;
+                }
+            }
+            else if (Rotation == "RL")
+            {
+                if (node.getSize(node.Right.Value) == node.getSize(node.Right.Left.Value))
+                {
+                    return node;
+                }
+            }
 
-                NewRoot = Nod.Left.Right;
+            if (Rotation == "LL") // Left Left Rotation 
+            {
+                NewRoot = node.Left;
+                OldRight = NewRoot.Right;
+                node.Left = null;
+                NewRoot.Right = node;
+            }
+            else if (Rotation == "LR") // Left Right Rotation 
+            {
+                NewRoot = node.Left.Right;
                 OldLeft = NewRoot.Left;
                 OldRight = NewRoot.Right;
-                Nod.Left.Right = null;
-                NewRoot.Left = Nod.Left;
-                Nod.Left = null;
-                NewRoot.Right = Nod;
-                if (Nod == Root) { Root = NewRoot; }
-                if (OldLeft != null) { AddNode(NewRoot, OldLeft); }
-                if (OldRight != null) { AddNode(NewRoot, OldRight); }
+                node.Left.Right = null;
+                NewRoot.Left = node.Left;
+                node.Left = null;
+                NewRoot.Right = node;
             }
-            else if (Rotation.Equals("RR")) // Right Right Rotation 
+            else if (Rotation == "RR") // Right Right Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Value))
-                    return Nod;
-
-                NewRoot = Nod.Right;
+                NewRoot = node.Right;
                 OldLeft = NewRoot.Left;
-                Nod.Right = null;
-                NewRoot.Left = Nod;
-                if (Nod == Root) { Root = NewRoot; }
-                if (OldLeft != null) { AddNode(NewRoot, OldLeft); }
+                node.Right = null;
+                NewRoot.Left = node;
             }
-            else if (Rotation.Equals("RL")) // Right Left Rotation 
+            else if (Rotation == "RL") // Right Left Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Left.Value))
-                    return Nod;
-
-                NewRoot = Nod.Right.Left;
+                NewRoot = node.Right.Left;
                 OldRight = NewRoot.Right;
                 OldLeft = NewRoot.Left;
-                Nod.Right.Left = null;
-                NewRoot.Right = Nod.Right;
-                Nod.Right = null;
-                NewRoot.Left = Nod;
-                if (Nod == Root) { Root = NewRoot; }
-                if (OldLeft != null) { AddNode(NewRoot, OldLeft); }
-                if (OldRight != null) { AddNode(NewRoot, OldRight); }
+                node.Right.Left = null;
+                NewRoot.Right = node.Right;
+                node.Right = null;
+                NewRoot.Left = node;
+            }
+
+            if (OldLeft != null)
+            {
+                AddNode(NewRoot, OldLeft);
+            }
+            if (OldRight != null)
+            {
+                AddNode(NewRoot, OldRight);
+            }
+            if (node == Root)
+            {
+                Root = NewRoot;
             }
             return NewRoot;
         }
-        private string HighestTwoSubTree(myNode node)
+        private string HighestTwoSubTree(TreeNode node)
         {
             string result; // Rotation Type 
 
-            // Check the two nodes that make the root unbalanced
+            // Check the two nodes(highest) that make the root unbalanced
             if (node.getHeight(node.Left) > node.getHeight(node.Right))
             {
                 if (node.getHeight(node.Left.Left) > node.getHeight(node.Left.Right))
@@ -205,20 +214,17 @@ namespace DataTest
             return result;
         }
 
-        public myNode Search(string value, bool searchparent = false)
+        public TreeNode Search(string value, bool searchparent = false)
         {
-            myNode SearchedNode = null;
+            TreeNode SearchedNode = null;
             Search(Root, value, ref SearchedNode, false, false);
 
             if (string.IsNullOrEmpty(value) || Root == null || SearchedNode == null) // Invalid value || Empty Tree || Node not found
                 return null;
 
-            if (!searchparent) // Default
+            if (!searchparent) //Default
             {
-                if (SearchedNode.Value == value)
-                {
-                    return SearchedNode;
-                }
+                return SearchedNode;
             }
             else if (searchparent) // Search for Parent Mode
             {
@@ -228,7 +234,7 @@ namespace DataTest
             }
             return null;
         }
-        private void Search(myNode node, string value, ref myNode Searched, bool searchparent = false, bool getHighest = false)
+        private void Search(TreeNode node, string value, ref TreeNode Searched, bool searchparent = false, bool getHighest = false)
         {
             if (node == null || Searched != null) //Result
                 return;
@@ -237,16 +243,18 @@ namespace DataTest
             {
                 if (node.Left == null) return;
 
-                for (Searched = node.Left; Searched.Right != null; Searched = Searched.Right) //Default Case ==> result == Last node
+                for (Searched = node.Left; Searched.Right != null; Searched = Searched.Right)
                 {
+                    //Default Case ==> result = Last node
+
                     if (searchparent)
                     {
-                        if (Searched.Right.Right == null) // Parent of The Last Node ==> result = Last node parent
+                        if (Searched.Right.Right == null) // Searchparent mode ==> result = Last node parent
                             return;
                     }
                 }
             }
-            else if (!getHighest)
+            else
             {
                 if (searchparent) // Search for perant
                 {
@@ -271,6 +279,7 @@ namespace DataTest
                         Search(node.Left, value, ref Searched, searchparent, false);
                     }
                 }
+
                 if (!searchparent) // Default Mode
                 {
                     if (node.Value.Equals(value) && Searched == null)
@@ -283,21 +292,21 @@ namespace DataTest
                 {
                     Search(node.Right, value, ref Searched, searchparent, false);
                 }
-                else if (node.getSize(value) <= node.getSize(node.Value))
+                else
                 {
                     Search(node.Left, value, ref Searched, searchparent, false);
                 }
             }
         }
 
-        public myNode Delete(string value)
+        public TreeNode Delete(string value)
         {
-            myNode node = Search(value); // Check if the node exists
+            TreeNode node = Search(value); // Check if the node exists
             if (node == null)
             {
                 return null;
             }
-            myNode parent = null;
+            TreeNode parent = null;
             Search(RootPtr, value, ref parent, true, false);
 
             char side = parent.Left == node ? 'L' : 'R'; // Node side
@@ -306,9 +315,9 @@ namespace DataTest
             Balance();
             return node;
         }
-        private void Delete(char side, int cNum, myNode root, myNode parent)
+        private void Delete(char side, int childrensNumber, TreeNode node, TreeNode parent)
         {
-            if (cNum == 0) // Delete the leaf
+            if (childrensNumber == 0) // Delete the leaf
             {
                 if (side == 'L')
                 {
@@ -319,69 +328,69 @@ namespace DataTest
                     parent.Right = null;
                 }
             }
-            else if (cNum == 1) // Replace the node with his leaf
+            else if (childrensNumber == 1) // Replace the node with his leaf
             {
                 if (side == 'L')
                 {
-                    if (root.Right == null)
+                    if (node.Right == null)
                     {
-                        parent.Left = root.Left;
+                        parent.Left = node.Left;
                     }
                     else
                     {
-                        parent.Left = root.Right;
+                        parent.Left = node.Right;
                     }
                 }
                 else
                 {
-                    if (root.Right == null)
+                    if (node.Right == null)
                     {
-                        parent.Right = root.Left;
+                        parent.Right = node.Left;
                     }
                     else
                     {
-                        parent.Right = root.Right;
+                        parent.Right = node.Right;
                     }
                 }
             }
-            else if (cNum == 2)
+            else if (childrensNumber == 2)
             {
-                myNode HighestNodeFromLeft = null;
+                TreeNode LargestNodeFromLeft = null;
 
-                Search(root, root.Value, ref HighestNodeFromLeft, false, true);
+                Search(node, node.Value, ref LargestNodeFromLeft, false, true);
 
-                root.Value = HighestNodeFromLeft.Value;
+                node.Value = LargestNodeFromLeft.Value;
 
 
-                if (root.Left.Right == null) // If the Left Subtree dont have Right brunch ==> The root will be replaced by the left branch
+                if (node.Left.Right == null) // If the Left Subtree have no Right brunch ==> The root will be replaced by the left branch
                 {
-                    myNode OldRight = root.Right.deepCopy();
+                    TreeNode OldRight = node.Right.deepCopy();
 
                     if (side == 'L')
                     {
-                        parent.Left = root.Left;
+                        parent.Left = node.Left;
                         parent.Left.Right = OldRight;
                     }
                     else
                     {
-                        parent.Right = root.Left;
+                        parent.Right = node.Left;
                         parent.Right.Right = OldRight;
                     }
                 }
 
                 else // If the Left Subtree has two branches ==> The root will be replaced by the Highest Node in Left Subtre
                 {
-                    myNode HighestNodeParent = null;
+                    TreeNode LargestNodeParent = null;
 
-                    Search(root, root.Value, ref HighestNodeParent, true, true);
+                    Search(node, node.Value, ref LargestNodeParent, true, true);
 
-                    if (HighestNodeFromLeft.childrensNum() > 0) // The last node on the Right has a Left branch
+                    if (LargestNodeFromLeft.childrensNum() > 0) // The last node on the Right has a Left branch
                     {
-                        HighestNodeParent.Right = HighestNodeFromLeft.Left;
+                        LargestNodeParent.Right = LargestNodeFromLeft.Left;
                     }
                     else //The last node has no children
                     {
-                        HighestNodeParent.Right = null;
+                        LargestNodeParent.Right = null;
                     }
                 }
             }
@@ -395,37 +404,44 @@ namespace DataTest
         {
             try
             {
-                myNode node = Delete(value).deepCopy(); //Catch the Deleted node => Change it value => Re-add it to the tree
+                TreeNode node = Delete(value).deepCopy(); //Catch the Deleted node => Change it value => Re-add it to the tree
                 node.Left = null;
                 node.Right = null;
 
                 node.Value = newValue;
                 AddNode(RootPtr, node);
+                Balance();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Not Found!");
             }
         }
+
+        public int TreeHeight()
+        {
+            return RootPtr.getHeight(Root);
+        }
+
     }
 
-    public class myNode
+    public class TreeNode
     {
-        public myNode(string value) { Value = value; }
         public string Value { get; set; }
-        public myNode Left { get; set; } = null!;
-        public myNode Right { get; set; } = null!;
+        public TreeNode(string value) { Value = value; }
+        public TreeNode Left { get; set; } = null!;
+        public TreeNode Right { get; set; } = null!;
 
         public int getSize(string value)
         {
             int size = 0;
             for (int i = 0; i < value.Length; i++)
             {
-                size += (int)value[i];
+                size += (short)value[i];
             }
             return size;
         }
-        public int getHeight(myNode node)
+        public int getHeight(TreeNode node)
         {
             if (node == null) return -1;
             return 1 + Math.Max(getHeight(node.Left), getHeight(node.Right));
@@ -444,9 +460,9 @@ namespace DataTest
                 num++;
             return num;
         }
-        public myNode deepCopy()
+        public TreeNode deepCopy()
         {
-            myNode clone = new myNode("null");
+            TreeNode clone = new TreeNode("null");
             clone.Value = this.Value;
             clone.Left = this.Left;
             clone.Right = this.Right;
