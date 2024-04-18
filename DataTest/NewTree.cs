@@ -54,7 +54,7 @@ namespace DataTest
             if (Root == null)
             {
                 Console.WriteLine("Tree is Empty");
-                
+
                 return;
             }
             Print(Root, printsize);
@@ -154,20 +154,14 @@ namespace DataTest
             }
             else if (Rotation == "RR") // Right Right Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Value))
-                    return Nod;
-
-                NewRoot = Nod.Right;
+                NewRoot = node.Right;
                 OldLeft = NewRoot.Left;
                 node.Right = null;
                 NewRoot.Left = node;
             }
             else if (Rotation == "RL") // Right Left Rotation 
             {
-                if (Nod.getSize(Nod.Value) == Nod.getSize(Nod.Right.Left.Value))
-                    return Nod;
-
-                NewRoot = Nod.Right.Left;
+                NewRoot = node.Right.Left;
                 OldRight = NewRoot.Right;
                 OldLeft = NewRoot.Left;
                 node.Right.Left = null;

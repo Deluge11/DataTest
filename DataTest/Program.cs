@@ -14,28 +14,17 @@ namespace DataTest
         static void Main(string[] args)
         {
 
-            NewTree tree = new NewTree();
+     
+            Graph graph = new Graph();
+
+            GraphNode A= new GraphNode();
+            GraphNode B= new GraphNode();
+            GraphNode C= new GraphNode();
+            GraphNode D= new GraphNode();
+            GraphNode E= new GraphNode();
 
 
-
-
-            Random w = new Random();
-
-
-
-   
-
-            for (int i = 0;i < 500;i++)
-            {
-                tree.Add(w.Next(300000000).ToString());
-            }
-
-  
-
-
-            tree.Print();
-
-            Console.WriteLine(tree.TreeHeight());
+            graph.myGraph[0] = 
 
         }
     }
