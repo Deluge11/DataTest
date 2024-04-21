@@ -1,12 +1,15 @@
 ﻿
 using System;
+using System.Collections.Generic;
 
 namespace DataTest
 {
     public class NewTree
     {
-        public TreeNode RootPtr = new TreeNode("RootPtr");
-        public TreeNode Root { get; private set; } = null!;
+        private TreeNode Root { get; set; } = null!;
+        private TreeNode RootPtr = new TreeNode("RootPtr");
+        private Stack<TreeNode> Path = new Stack<TreeNode>();
+
         public void Add(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -19,12 +22,16 @@ namespace DataTest
             }
             else
             {
+                Path.Push(RootPtr);
+                Path.Push(Root);
                 AddNode(Root, new TreeNode(value));
-                Balance();
+                Balance(Path);
             }
         }
         private void AddNode(TreeNode node, TreeNode newNode)
         {
+            Path.Push(node);
+
             if (newNode.getSize(newNode.Value) > node.getSize(node.Value))
             {
                 if (node.Right == null)
@@ -80,16 +87,12 @@ namespace DataTest
             }
         }
 
-        public void Balance()
+        private void Balance(Stack<TreeNode> path)
         {
-            Balance(RootPtr);
-        }
-        private void Balance(TreeNode node)
-        {
+            TreeNode node = path.Pop();
+
             if (node.Left != null)
             {
-                //Check The Balance Of Depth Nodes First
-                Balance(node.Left);
                 if (node.Left.getFactor() == 2 || node.Left.getFactor() == -2)
                 {
                     node.Left = Rotate(node.Left);
@@ -97,13 +100,19 @@ namespace DataTest
             }
             if (node.Right != null)
             {
-                Balance(node.Right);
                 if (node.Right.getFactor() == 2 || node.Right.getFactor() == -2)
                 {
                     node.Right = Rotate(node.Right);
                 }
             }
+
+            while (path.Count > 0)
+            {
+                Balance(path);
+            }
+
         }
+
         private TreeNode Rotate(TreeNode node)
         {
             TreeNode NewRoot = node;
@@ -224,12 +233,15 @@ namespace DataTest
 
             if (!searchparent) //Default
             {
+                Path.Clear(); //Normal Searching
                 return SearchedNode;
             }
             else if (searchparent) // Search for Parent Mode
             {
                 SearchedNode = null;
                 Search(RootPtr, value, ref SearchedNode, true, false);
+
+                Path.Clear();
                 return SearchedNode;
             }
             return null;
@@ -238,6 +250,8 @@ namespace DataTest
         {
             if (node == null || Searched != null) //Result
                 return;
+
+            Path.Push(node);
 
             if (getHighest) // Bring the Highest node on the Left SubTree
             {
@@ -312,7 +326,7 @@ namespace DataTest
             char side = parent.Left == node ? 'L' : 'R'; // Node side
 
             Delete(side, node.childrensNum(), node, parent);
-            Balance();
+            Balance(Path);
             return node;
         }
         private void Delete(char side, int childrensNumber, TreeNode node, TreeNode parent)
@@ -410,7 +424,7 @@ namespace DataTest
 
                 node.Value = newValue;
                 AddNode(RootPtr, node);
-                Balance();
+                Balance(Path);
             }
             catch (Exception)
             {
@@ -418,7 +432,7 @@ namespace DataTest
             }
         }
 
-        public int TreeHeight()
+        public int Height()
         {
             return RootPtr.getHeight(Root);
         }
@@ -450,6 +464,13 @@ namespace DataTest
         {
             if (this == null) return 0;
             return getHeight(Left) - getHeight(Right);
+
+            //if (getHeight(Left) == 0 || getHeight(Right) == 0)
+            //{
+            //    return getHeight(Left) + 1 / getHeight(Right) + 1;
+            //}
+
+            //return getHeight(Left) / getHeight(Right);
         }
         public short childrensNum()
         {
